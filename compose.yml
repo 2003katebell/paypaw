@@ -15,7 +15,7 @@ services:
       VERIFICATION_TOKEN_TTL_SEC: 1800
       DOMAIN: ${DOMAIN_API}
       DEV: TRUE
-      MONGODB__CONNECTION_URI: mongodb://root:root@mongo:27017
+      MONGODB__CONNECTION_URI: mongodb://${MONGODB_USER}:${MONGODB_PASS}@${MONGODB_ADDR}
       MONGODB__DATABASE: cryptopay
       MONGODB__TIMOUTMS: 10000
     depends_on:
@@ -29,14 +29,13 @@ services:
     volumes:
       - ./mongo_data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASS}
   traefik:
     image: traefik:v3.5.0
     networks:
       - proxy
     command:
-      - --api.insecure=true
       - --api.dashboard=true
       - --accesslog=true
       - --log.level=DEBUG
@@ -60,7 +59,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./le:/le
